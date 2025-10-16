@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Jrq.Ecommerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = StaticDetails.Role_Admin)]
+    //[Authorize(Roles = StaticDetails.Role_Admin)]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -63,7 +63,7 @@ namespace Jrq.Ecommerce.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.update(obj);
+                _unitOfWork.Category.Update(obj);
                 _unitOfWork.Save();
                 TempData["success"] = "Category updated Successfully";
                 return RedirectToAction("Index");
