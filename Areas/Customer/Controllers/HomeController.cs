@@ -42,7 +42,7 @@ namespace Jrq.Ecommerce.Areas.Customer.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            shoppingCart.ApplicationUserId = userId;
+            shoppingCart.ApplicationUserId = userId; 
             _unitOfWork.ShoppingCart.Add(shoppingCart);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
