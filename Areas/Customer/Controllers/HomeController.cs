@@ -36,17 +36,30 @@ namespace Jrq.Ecommerce.Areas.Customer.Controllers
             //Product product = _unitOfWork.Product.Get(u=>u.Id== productId, includeProperties: "Category");
             return View(cart);
         }
+
         [HttpPost]
         [Authorize]
         public IActionResult Details(ShoppingCart shoppingCart)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            shoppingCart.ApplicationUserId = userId; 
-            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            shoppingCart.ApplicationUserId = userId;
+
+            // If the product already exists in the user's cart, increment the count instead of adding a duplicate row
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == shoppingCart.ProductId);
+
+            if (cartFromDb == null)
+            {
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            }
+            else
+            {
+                cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+            }
+
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
-            ;
         }
 
         public IActionResult Privacy()
