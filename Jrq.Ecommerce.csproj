@@ -20,12 +20,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Jrq.DataAccess\Jrq.DataAccess.csproj" />
-	  <ProjectReference Include="..\Jrq.Models\Jrq.Models.csproj" />
+	  <Folder Include="Jrq.Ecommerce\Properties\" />
+	  <Folder Include="wwwroot\Images\Product\" />
+	</ItemGroup>
+
+	<!-- Prevent the web project from compiling class library sources that live in subfolders
+		 (those projects are built separately via ProjectReference). This avoids duplicate
+		 type definitions and related compiler errors when class library folders are
+		 located under the web project folder.
+	-->
+	<ItemGroup>
+	  <Compile Remove="Jrq.Models\**\*.cs" />
+	  <Compile Remove="Jrq.Utility\**\*.cs" />
+	  <Compile Remove="Jrq.DataAccess\**\*.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\Images\Product\" />
+	  <ProjectReference Include="Jrq.DataAccess\Jrq.DataAccess.csproj" />
+	  <ProjectReference Include="Jrq.Models\Jrq.Models.csproj" />
 	</ItemGroup>
 
 </Project>
