@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Jrq.Utility;
 using Stripe;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,19 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+// Resolve Stripe secret from configuration or environment (support user-secrets / env vars)
+var configuration = app.Configuration;
+var stripeKey = configuration["Stripe:SecretKey"] ?? Environment.GetEnvironmentVariable("Stripe__SecretKey");
+if (string.IsNullOrWhiteSpace(stripeKey))
+{
+    // Log a warning in case the secret is missing to avoid runtime errors; payment features will be disabled.
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogWarning("Stripe secret key not found. Set 'Stripe:SecretKey' via user-secrets or the environment variable 'Stripe__SecretKey'. Payment functionality will be disabled.");
+}
+else
+{
+    StripeConfiguration.ApiKey = stripeKey;
+}
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
